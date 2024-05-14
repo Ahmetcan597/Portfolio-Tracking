@@ -4,10 +4,7 @@
 
 package com.team.portfoliotracker;
 
-/**
- *
- * @author ahmetcantemel
- */
+
 public class Portfoliotracker {
 
     public static void main(String[] args) {

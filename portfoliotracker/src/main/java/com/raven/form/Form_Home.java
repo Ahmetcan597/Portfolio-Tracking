@@ -2,72 +2,41 @@
 package com.raven.form;
 
 import com.raven.model.Model_Card;
+import com.raven.model.Currency;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import javax.swing.ImageIcon;
-import org.json.JSONObject;
-
+import com.raven.component.Text_Field;
+ import javax.swing.JFrame;
+import com.deu.utils.ApiServices;
+import static com.deu.utils.WalletReader.readCryptoWalletsFromCSV;
+import java.util.List;
 
 public class Form_Home extends javax.swing.JPanel {
     
-    public String getData(String coin) {
-        
-        String price24h = "";
-        try {
-            // Create a URL object with the API endpoint
-            URL url = new URL("https://api.blockchain.com/v3/exchange/tickers/" + coin + "-USD");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            // Set any headers if required
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-            // Get the response code
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Read the response
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-                
-                JSONObject jsonResponse = new JSONObject(response.toString());
-        
-                // Extract data from the JSON object
-                String symbol = jsonResponse.getString("symbol");
-                price24h = jsonResponse.getString("price_24h");
-                double volume24h = jsonResponse.getDouble("volume_24h");
-                double lastTradePrice = jsonResponse.getDouble("last_trade_price");
-
-              
-
-                
-            } else {
-                System.out.println("HTTP GET request failed with response code: " + responseCode);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return price24h;
-    }
-
+   
+      Text_Field frameText;
 
     public Form_Home() {
+        
         initComponents();
-        card1.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/bitcoin.png"), "Bitcoin", "$"+getData("BTC"), "BTC","0.25%"));
-        card2.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/litecoin.png"), "Cardano", "$"+getData("ADA"), "ADA","0.25%"));
-        card3.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/eth2.png"), "Ethereum", "$"+getData("ETH"), "ETH","0.25%"));
-        card4.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/solona.png"), "Solana", "$"+getData("SOL"), "SOL","-0.25%"));
+        frameText = new Text_Field();
+        ApiServices apiService = new ApiServices();
+        card1.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/bitcoin.png"), "Bitcoin", "$"+ apiService.getData("BTC"), "BTC","0.25%"));
+        card2.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/litecoin.png"), "Cardano", "$"+apiService.getData("BTC"), "ADA","0.25%"));
+        card3.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/eth2.png"), "Ethereum", "$"+apiService.getData("BTC"), "ETH","0.25%"));
+        card4.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/solona.png"), "Solana", "$"+apiService.getData("BTC"), "SOL","-0.25%"));
+       
+        
+        List<Currency> Currency = readCryptoWalletsFromCSV("src/main/java/Wallet.csv");
+        for (Currency currency : Currency) {
+            table.addRow(new Object[]{currency.getName(),currency.getAmount(), Double.toString(currency.getCurrentPrice())+ "$" , Double.toString(currency.getTotalValue())+ "$" });
+        
+        }
+       
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -79,6 +48,11 @@ public class Form_Home extends javax.swing.JPanel {
         card2 = new com.raven.component.Card();
         card3 = new com.raven.component.Card();
         card4 = new com.raven.component.Card();
+        panelBorder1 = new com.team.portfoliotracker.PanelBorder();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new com.raven.swing.Table();
+        jButton1 = new javax.swing.JButton();
 
         panel.setBackground(new java.awt.Color(27, 32, 40));
         panel.setForeground(new java.awt.Color(49, 53, 63));
@@ -123,13 +97,68 @@ public class Form_Home extends javax.swing.JPanel {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        jLabel1.setFont(new java.awt.Font("Kefa", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("My Wallet");
+
+        jScrollPane1.setBorder(null);
+
+        table.setBackground(new java.awt.Color(0, 0, 0));
+        table.setForeground(new java.awt.Color(255, 255, 255));
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "My Cryptos", "Amount", "Price", "Total Value"
+            }
+        ));
+        jScrollPane1.setViewportView(table);
+
+        jButton1.setBackground(new java.awt.Color(24, 29, 51));
+        jButton1.setForeground(new java.awt.Color(107, 127, 249));
+        jButton1.setText("Add Currency");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
+        panelBorder1.setLayout(panelBorder1Layout);
+        panelBorder1Layout.setHorizontalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(23, 23, 23))
+            .addComponent(jScrollPane1)
+        );
+        panelBorder1Layout.setVerticalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addGroup(panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -137,10 +166,25 @@ public class Form_Home extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        
+        frameText.setVisible(true);
+        frameText.pack();
+        frameText.setLocationRelativeTo(null);
+        frameText.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);        
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    public static void AddRowToJTable(Object[] data){
+        table.addRow(data);
+    }
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
@@ -155,6 +199,11 @@ public class Form_Home extends javax.swing.JPanel {
     private com.raven.component.Card card2;
     private com.raven.component.Card card3;
     private com.raven.component.Card card4;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLayeredPane panel;
+    private com.team.portfoliotracker.PanelBorder panelBorder1;
+    private static com.raven.swing.Table table;
     // End of variables declaration//GEN-END:variables
 }
