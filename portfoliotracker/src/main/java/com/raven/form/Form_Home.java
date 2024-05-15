@@ -1,4 +1,3 @@
-
 package com.raven.form;
 
 import com.raven.model.Model_Card;
@@ -9,34 +8,37 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.ImageIcon;
 import com.raven.component.Text_Field;
- import javax.swing.JFrame;
+import javax.swing.JFrame;
 import com.deu.utils.ApiServices;
+import com.deu.utils.CSVFileHandler;
 import static com.deu.utils.WalletReader.readCryptoWalletsFromCSV;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class Form_Home extends javax.swing.JPanel {
-    
-   
-      Text_Field frameText;
+
+    Text_Field frameText;
 
     public Form_Home() {
-        
+
         initComponents();
         frameText = new Text_Field();
         ApiServices apiService = new ApiServices();
-        card1.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/bitcoin.png"), "Bitcoin", "$"+ apiService.getData("BTC"), "BTC","0.25%"));
-        card2.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/litecoin.png"), "Cardano", "$"+apiService.getData("BTC"), "ADA","0.25%"));
-        card3.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/eth2.png"), "Ethereum", "$"+apiService.getData("BTC"), "ETH","0.25%"));
-        card4.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/solona.png"), "Solana", "$"+apiService.getData("BTC"), "SOL","-0.25%"));
-       
-        
+        card1.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/bitcoin.png"), "Bitcoin", "$" + apiService.getData("BTC"), "BTC", "0.25%"));
+        card2.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/litecoin.png"), "Cardano", "$" + apiService.getData("BTC"), "ADA", "0.25%"));
+        card3.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/eth2.png"), "Ethereum", "$" + apiService.getData("BTC"), "ETH", "0.25%"));
+        card4.setData(new Model_Card(new ImageIcon("src/main/java/com.raven.icon/solona.png"), "Solana", "$" + apiService.getData("BTC"), "SOL", "-0.25%"));
+
         List<Currency> Currency = readCryptoWalletsFromCSV("src/main/java/Wallet.csv");
         for (Currency currency : Currency) {
-            table.addRow(new Object[]{currency.getName(),currency.getAmount(), Double.toString(currency.getCurrentPrice())+ "$" , Double.toString(currency.getTotalValue())+ "$" });
-        
+            table.addRow(new Object[]{currency.getName(), currency.getAmount(), Double.toString(currency.getCurrentPrice()) + "$", Double.toString(currency.getTotalValue()) + "$"});
+
         }
-       
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -53,6 +55,7 @@ public class Form_Home extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new com.raven.swing.Table();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         panel.setBackground(new java.awt.Color(27, 32, 40));
         panel.setForeground(new java.awt.Color(49, 53, 63));
@@ -125,6 +128,15 @@ public class Form_Home extends javax.swing.JPanel {
             }
         });
 
+        jButton2.setBackground(new java.awt.Color(24, 29, 51));
+        jButton2.setForeground(new java.awt.Color(107, 127, 249));
+        jButton2.setText("Delete");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
         panelBorder1.setLayout(panelBorder1Layout);
         panelBorder1Layout.setHorizontalGroup(
@@ -133,7 +145,9 @@ public class Form_Home extends javax.swing.JPanel {
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addGap(23, 23, 23))
+                .addGap(32, 32, 32)
+                .addComponent(jButton2)
+                .addContainerGap())
             .addComponent(jScrollPane1)
         );
         panelBorder1Layout.setVerticalGroup(
@@ -141,7 +155,8 @@ public class Form_Home extends javax.swing.JPanel {
             .addGroup(panelBorder1Layout.createSequentialGroup()
                 .addGroup(panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -171,20 +186,52 @@ public class Form_Home extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+
         frameText.setVisible(true);
         frameText.pack();
         frameText.setLocationRelativeTo(null);
-        frameText.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);        
-        
+        frameText.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
     }//GEN-LAST:event_jButton1ActionPerformed
-    
-    public static void AddRowToJTable(Object[] data){
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel tblModel = (DefaultTableModel) table.getModel();
+
+        if (table.getSelectedRowCount() == 1) {
+            int a = JOptionPane.showConfirmDialog(this, "Are you sure?");
+            if (a == JOptionPane.YES_OPTION) {
+                int selectedRow = table.getSelectedRow();
+                String currency = (String) tblModel.getValueAt(selectedRow, 0);
+
+                tblModel.removeRow(selectedRow);
+
+                try {
+                    CSVFileHandler.removeCurrencyFromCSV("src/main/java/Wallet.csv", currency);
+                } catch (IOException ex) {
+                    Logger.getLogger(Form_Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+
+        } else {
+            if (table.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "Table is empty.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row.");
+            }
+
+        }
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    public static void AddRowToJTable(Object[] data) {
         table.addRow(data);
     }
+
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
@@ -200,6 +247,7 @@ public class Form_Home extends javax.swing.JPanel {
     private com.raven.component.Card card3;
     private com.raven.component.Card card4;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLayeredPane panel;
